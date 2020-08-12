@@ -4,11 +4,11 @@ A productivity tool for doing math on the fly while typing on a web page, withou
 
 ## Method
 
-# Event Handler
+### Event Handler
 
 The content script adds a keyup event handler to the page's active element. The characters corresponding to the user's last three keystrokes are stored in a buffer, which is checked on each stroke for double closing square brackets ("]]"). The presence of double closing square brackets triggers evaluation of the bracketed expression.
 
-# Math
+### Math
 
 The bracketed expression is treated as a string and evaluated piecemeal according to the normal order of operations. Operations and parenthetical expressions are identified and evaluated through looped regular expression tests.
 
