@@ -1,0 +1,65 @@
+h1 {
+  text-align:center;
+  font-family: Verdana, Geneva, sans-serif;
+  margin-bottom: 0px;
+  margin-top: 8px;
+}
+
+h3 {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 18px;
+}
+
+p {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 16px;
+  margin-left: 10px;
+
+}
+
+th {
+  font-size:14;
+}
+
+tr {
+  height: 17px;
+}
+
+td, th {
+  width: 50%;
+  overflow: hidden;
+  white-space: pe-line;
+  text-overflow: ellipsis;
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 4px;
+}
+
+.alt-rows {
+  background-color: FloralWhite;
+}
+
+.horizontal {
+  text-align: center;
+}
+
+
+#content {
+  padding: 5px;
+  width: 500px;
+}
+
+#options-link {
+  color: blue;
+  text-decoration: underline;
+}
+
+#recents-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 12px;
+  margin: 10px;
+  width: 97%;
+
+}

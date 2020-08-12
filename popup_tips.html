@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="css/popup_tips.css"/>
+    <script src="js/content.js"></script>
+  </head>
+  <body>
+    <div id='content'>
+      <p>
+        <a href=popup.html>< Back</a>
+      </p>
+      <h2>Supported characters/operations:</h2>
+      <p id='supported'>+  -  *  /  ^  (  )</p>
+      <h3><b>In most text input areas on most webpages,</b> type your expressions between double square brackets. For example:</h3>
+      <div class = 'examples'>
+        <p>[[2+2]]</p>
+        <p>[[3-(4*.2)]]</p>
+        <p>[[(.5*.44-.2)^(1/5)+12]]</p>
+      </div>
+      <h3>The expressions will be evaluated and the text replaced as soon as you type the second closing bracket:</h3>
+      <div class='examples'>
+        <p>[[2+2]]<br> --> <b>[[4</b></p>
+        <p>[[3-(4*.2)]]<br> --> <b>[[2.2</b></p>
+        <p>[[(.5*.44)^(1/5)+12]]<br> --> <b>[[12.7387</b></p>
+      </div>
+      <h3>The brackets remain open so you can perform successive operations quickly without touching the mouse. Simply add a third closing bracket when you're done to "exit" the calculator.</h3>
+      <h3>Try it!</h3>
+      <input></input>
+    </div>
+  </body>
+</html>

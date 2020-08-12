@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>In-Line Calculator: Options</title>
+    <link rel="stylesheet" href="css/options.css" />
+    <script src="js/options.js"></script>
+  </head>
+  <body>
+    <div id=content>
+      <div class='horizontal'>__________________________________________________________________________________</div>
+        <h1>[[  In-Line Calculator  ]]</h1>
+      <div class='horizontal'>__________________________________________________________________________________</div>
+      <h2>Set Timeout</h2>
+      <h3>Time interval after which the calculator will produce an error if no result has been found for a given execution.</h3>
+      <p>Certain operations (fractional and decimal exponents, in particular) may take longer than a few seconds to complete. Specity the maximum amount of time to wait for a result before throwing an error.</p>
+      <div class="timeout-container">
+        <input id = "timeout-slider" type="range" min="100" max="9999" value="2000ms" class="slider">
+        <div class='button-value-container'>
+          <div class='button-container'>
+          </div>
+          <div id='timeout-value' class='slider-val'></div>
+        </div>
+      </div>
+      <h2>Rounding</h2>
+      <h3>Specify the maximum number of decimal places you would like to see in your results.</h3>
+      <div class="timeout-container">
+        <input id = "rounding-slider" type="range" min="0" max="20" value="7" class="slider">
+        <div class='button-value-container'>
+          <div class='button-container'>
+          </div>
+          <div id='rounding-value' class='slider-val'>Placeholder</div>
+        </div>
+      </div>
+      <div id = 'save-button-container'>
+        <button id='save-button'>Save settings</button>
+        <div id='save-message'></div>
+      </div>
+  </body>
+</html>

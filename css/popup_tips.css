@@ -1,0 +1,54 @@
+h1 {
+  text-align:center;
+  font-family: Verdana, Geneva, sans-serif;
+  font-weight: lighter;
+}
+
+h2 {
+  text-align: center;
+  font-family: 'open sans', sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+h3 {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  font-weight: lighter;
+}
+
+p {
+  font-family: Verdana, Geneva, sans-serif;
+  font-size: 14px;
+  font-weight: lighter;
+}
+
+input {
+  width:90%;
+  font-size: 14px;
+}
+
+.examples {
+  line-height: 1.6;
+  padding-bottom: 5px;
+  padding-left: 60px;
+  text-indent: -10px;
+}
+
+#content {
+  width: 500px;
+  height: 1900;
+}
+
+#options_link {
+  text-color: blue;
+  text-decoration: underline;
+}
+
+#supported {
+  text-align: center;
+  letter-spacing: 20px;
+  font-family: 'Open sans' sans-serif;
+  font-weight: bolder;
+  font-size: 24px;
+}
