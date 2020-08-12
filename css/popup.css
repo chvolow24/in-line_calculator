@@ -54,6 +54,11 @@ td, th {
   text-decoration: underline;
 }
 
+#source-link {
+  color: blue;
+  text-decoration: underline;
+}
+
 #recents-table {
   table-layout: fixed;
   border-collapse: collapse;

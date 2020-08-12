@@ -5,8 +5,6 @@ function pullRecents() {
 
     for (i=0; i<tableArray.length; i++) {
         var test = tableArray[i]
-        console.log(test.expr)
-        console.log(test.result)
         if (i%2!=0) {
           domTable.innerHTML += "<tr><td>" + test.expr + "</td><td>" + test.result + "</td></tr>";
         }
@@ -21,12 +19,14 @@ window.onload = function() {
   pullRecents();
   const options = document.getElementById('options-link')
   const content = document.getElementById('content')
-  console.log(content)
-  console.log(options)
+  const source = document.getElementById('source-link')
 
   options.addEventListener("click", () => {
     chrome.tabs.create({ url: "../options.html"});
   });
 
+  source.addEventListener("click", () => {
+    chrome.tabs.create({ url: "https://github.com/chvolow24/inline-calculator"});
+  });
 
 }
