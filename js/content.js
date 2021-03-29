@@ -1,7 +1,7 @@
 console.log('In-Line Calculator is active.');
 
-var buffer = ''
-var errResult = ''
+var buffer = '';
+var errResult = '';
 const bracketed = /\[{2}[^[,]*?\]{2}/g;
 const bracketEnd = /\[{2}[^[,]*?\]{1}/g;
 
@@ -20,7 +20,7 @@ var recentsTable = [
     , {expr:'',result:''}
     , {expr:'',result:''}
     , {expr:'',result:''}
-    ];
+  ];
 // ================================MATH CODE=============================================
 
 // defining regular expressions to be used
@@ -39,17 +39,18 @@ const innerExp = /-?[0-9]*\.?[0-9]*\^-?[0-9]*\.?[0-9]*/;
 const nakedDec = /(?<!\d)\./;
 const dubEnd = /[^\]]\]\]/;
 
+
 //Here are the basic arithmetic operations, taking string numerical inputs
 
 function add(a,b) {
-    return parseFloat(a)+parseFloat(b);
-}
+    return parseFloat(a)+parseFloat(b)
+};
 function div(a,b) {
-    return parseFloat(a)/parseFloat(b);
-}
+    return parseFloat(a)/parseFloat(b)
+};
 function mult(a,b) {
-    return parseFloat(a)*parseFloat(b);
-}
+    return parseFloat(a)*parseFloat(b)
+};
 
 function getFactors(n) {
   //returns an array
@@ -62,29 +63,29 @@ function getFactors(n) {
   }
   return factors
 
-}
+};
 
 function fracReduce(num,denom) {
   if (denom>999999) {
-    var denomStr = denom.toString()
-    var conversionFactor = intPow(10,(denomStr.length-6))
+    let denomStr = denom.toString()
+    let conversionFactor = intPow(10,(denomStr.length-6))
     return [(num/conversionFactor).toFixed(0),denom/conversionFactor]
   }
-  var numFactors = getFactors(num);
-  var denomFactors = getFactors(denom);
-  var GCF = 1;
+  let numFactors = getFactors(num)
+  let denomFactors = getFactors(denom)
+  let GCF = 1
   for (i=0; i<numFactors.length;i++) {
       if (denomFactors.includes(numFactors[i])) {
           GCF = numFactors[i]
       }
    }
   return [num/GCF, denom/GCF]
-}
+};
 
 function intPow(a,b) {
-    var start = window.performance.now();
-    var factor = a;
-    var exponent = b;
+    let start = window.performance.now()
+    let factor = a
+    let exponent = b
     if (b<1) {
         exponent = (-1*b)
     }
@@ -100,7 +101,7 @@ function intPow(a,b) {
           return
         }
         a*=factor
-        exponent--;
+        exponent--
     }
     if (b<1) {
         return (1 / a)
@@ -108,20 +109,20 @@ function intPow(a,b) {
     else {
         return a
     }
-}
+};
 
 function abs(a) {
-  var aString = a.toString();
+  let aString = a.toString();
   aString = aString.replace('-','')
   return parseFloat(aString)
-}
+};
 
 function rootApprox(a,b) {
     // 'a'th root of b. If a=2, sqrt of b, if a=3, cubic root of b, etc.
-    var strResult = ''
-    var strDec = ''
-    var start = window.performance.now();
-    var i = 0;
+    let strResult = ''
+    let strDec = ''
+    let start = window.performance.now();
+    let i = 0;
     if (b<0) {
       errResult = "imaginary #s not supported"
       return
@@ -152,7 +153,7 @@ function rootApprox(a,b) {
         strDec += j.toString()
     }
     return strResult + '.' + strDec
-}
+};
 
 function floatPow(a,b) {
     if (parseInt(b)==b) {
@@ -171,7 +172,7 @@ function floatPow(a,b) {
         var reduced = fracReduce(num,denom)
         return intPow(rootApprox(reduced[1],a),reduced[0])
     }
-}
+};
 
 function fractPow(a,b) {
     b=b.replace('(','')
@@ -180,7 +181,7 @@ function fractPow(a,b) {
     var denom = parseInt(b.split('/')[1])
     return intPow(rootApprox(denom,a),num)
 
-}
+};
 
 //the opEval function evaluates an expression with only one arithmetic operations
 
@@ -203,7 +204,7 @@ function opEval(str) {
     else {
       return str
     }
-}
+};
 
 function evalNoParens(str) {
   while (subTest.test(str)) {
@@ -220,7 +221,7 @@ function evalNoParens(str) {
 //      str = str.replace(innerDiv,opEval);
 //  }
   return opEval(str);
-}
+};
 
 function validate(str) {
   while (floatReg.test(str)) {
@@ -246,7 +247,7 @@ function validate(str) {
     return
   }
 
-}
+};
 
 function parseMath(str) {
   str = str.split(' ').join('');
@@ -273,9 +274,7 @@ function parseMath(str) {
 //    'result' : str
 //  });
   return result
-
-
-}
+};
 // ================================END MATH CODE=============================================
 
 
@@ -335,8 +334,7 @@ function pushRecents(recentsTable) {
   return
 }
 
-function bufferHandler(key, element, text, domain, win, doc) {
-
+function bufferHandler(key, element, text, isVal) {
   if (buffer.length < 3) {
     buffer+=key;
   }
@@ -359,95 +357,90 @@ function bufferHandler(key, element, text, domain, win, doc) {
       result = parseFloat(result).toFixed(places);
     }
 
-    var objToPush={expr:expr, result:result}
-
+    let objToPush={expr:expr, result:result}
     recentsTable.pop();
     recentsTable.unshift(objToPush);
     pushRecents(recentsTable);
 
-    if (domain==='jira.atlassian.com' && element.type===undefined) {
-      textToReplace = element.innerHTML;
-      newHTML = textToReplace.replace(bracketed, '[[' + result);
-      element.innerHTML = newHTML;
-      const selection = win.getSelection();
-      const node = selection.anchorNode;
-      const range = selection.getRangeAt(0)
-      range.setStart(doc.activeElement,0)
-      range.setEnd(doc.activeElement,1)
-      range.setStartAfter(node);
-      selection.removeAllRanges();
-      selection.addRange(range);
+    let caretDif = result.length-(expr.length+2);
+    let caretObj = getCaretPosition(isVal,element)
+    let caretPosition = caretObj.offset;
+
+    let replaceText = text.replace(bracketed, '[[' + result);
+
+    let caretNode = caretObj.node;
+
+
+    if (isVal) {
+      // element.value = text.replace(bracketed, '[[' + result);
+      element.value = replaceText;
     }
     else {
-      element.value = text.replace(bracketed, '[[' + result);;
+      // element.innerHTML = text.replace(bracketed, '[[' + result);
+      // element.innerHTML = replaceText;
+      element.nodeValue = replaceText;
+      setCaretPosition(caretObj.range,caretPosition+caretDif)
     }
+    // console.log('setting range index')
+    // caretRange.setStart(endContainer, endOffset+dif);
+    // setCaretIndex(rangeObj.range,rangeObj.position+dif);
+
+
   //  buffer = '';
   };
   if (buffer === ']]]') {
-    if (domain==='jira.atlassian.com' && element.type===undefined) {
-      textToReplace = element.innerHTML;
-      newHTML = textToReplace.replace(bracketEnd,result)
-      element.innerHTML = newHTML;
-      const selection = win.getSelection();
-      const node = selection.anchorNode;
-      const range = selection.getRangeAt(0)
-      range.setStart(doc.activeElement,0)
-      range.setEnd(doc.activeElement,1)
-      range.setStartAfter(node);
-      selection.removeAllRanges();
-      selection.addRange(range);
-    }
-    else {
+    let rangeObj = getCaretPosition(isVal,element);
+    if (isVal) {
       element.value = text.replace(bracketEnd,result);
     }
+    else {
+      let caretObj = getCaretPosition(isVal,element)
+      let caretPosition = caretObj.offset;
+      element.nodeValue = text.replace(bracketEnd,result);
+      setCaretPosition(caretObj.range,caretPosition-3)
+
+    }
     buffer = '';
-  };
-}
-
-window.onload = (event) => {
-  var targetedEls = []
-  pullUserData()
-  var domain = window.location.host;
-  if (domain == "jira.atlassian.com") {
-    window.addEventListener('click', function(event) {
-      jiraContainerId=event.target.id + '_ifr';
-      jiraContainer = document.getElementById(jiraContainerId);
-      if (jiraContainer != undefined) {
-        jiraWindow = jiraContainer.contentWindow;
-        jiraDocument = jiraContainer.contentDocument;
-        jiraEl = jiraDocument.activeElement;
-        if (!targetedEls.includes(jiraEl)) {
-          targetedEls.push(jiraEl);
-          jiraEl.addEventListener('keyup', event => {
-            var selection = jiraWindow.getSelection();
-            var text = selection.anchorNode.nodeValue;
-            var key = event.key;
-            bufferHandler(key, jiraEl, text, domain, jiraWindow, jiraDocument)
-          });
-        }
-        else {
-          console.log("Clicked element already selected:")
-          console.log(jiraEl)
-        }
-
-      }
-      else {
-        console.log('Clicked element not selectable')
-      }
-
-    });
   }
 };
 
-
-window.addEventListener('keyup', function() {
-  var domain = window.location.host;
-  var activeEl = document.activeElement;
-  var text = activeEl.value;
-  var key = event.key;
-  if (domain === 'jira.atlassian.com' && activeEl.type === 'iframe') {
+function getCaretPosition(isVal,target) {
+  const isSupported = typeof window.getSelection !== "undefined";
+  if (isSupported && !isVal) {
+    let selection = window.getSelection();
+    let range = window.getSelection().getRangeAt(0);
+    return {'node':selection.anchorNode,'offset':selection.anchorOffset,'range':range};
+  }
+  if (isSupported && isVal) {
+    return {'node':document.activeElement,'offset':target.selectionStart,};
   }
   else {
-    bufferHandler(key, activeEl, text, domain, window)
+    return {'node':document.activeElement,'offset':0};
   }
-});
+}
+
+function setCaretPosition(range,position) {
+  range.setStart(range.endContainer,position)
+  range.setEnd(range.endContainer,position)
+}
+
+function keyUp(event) {
+  let text = '';
+  let isVal = true;
+  let element;
+  if (typeof event.target.value != 'undefined') {
+    element = event.target;
+    text = event.target.value;
+  }
+  else {
+    element = window.getSelection().anchorNode;
+    text = element.nodeValue;
+    isVal = false;
+  }
+  bufferHandler(event.key,element,text,isVal)
+}
+
+
+window.onload = (event) => {
+  window.addEventListener('keyup',keyUp, true)
+}

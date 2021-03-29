@@ -17,19 +17,19 @@ Exponents, including fractional and floating point exponents, are evaluated algo
 
 ## Known issues
 
-- The calculator doesn't work everywhere. (Gmail compose windows, google docs, and the omnibox are notable examples of unsupported text fields).
-- The algorithms are imperfect. My own testing may not be commensurate with your use case.
-- The algorithms can be slow. While most expressions are evaluated nearly instantaneously, certain cases may time out, even with a generous user setting. The most egregious of these cases are floating point exponents, which are evaluated by means of an algorithm whose speed decreases by an order of magnitude with each decimal place in the exponent.
+- The calculator doesn't work everywhere. (google docs, chrome "omnibox")
+- The algorithms used to evaluate math expressions may not be perfect in extreme cases
+- The algorithms can be slow. While most expressions are evaluated nearly instantaneously, certain cases may time out. Floating point exponents are worst offender
 
 
 ## Technologies used
 
-All JS functions not defined in these files are native to the language.
-
-The only external dependency of note is the Jira-specific use case, which could fail with a change to Jira.
-
+All native JavaScript
 
 ## Version history
+
+v1.3.0
+-revamped architecture -- works broadly in texteditable divs
 
 v1.2.3
 - handles imaginary results with error ("imaginary #s not supported")
