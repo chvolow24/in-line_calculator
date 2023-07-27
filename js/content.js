@@ -269,7 +269,7 @@ function keyUp(event) {
 }
 
 
-window.onload = (event) => {
+window.onload = () => {
   console.log('In-Line Calculator is active.');
   pullUserOptions();
   window.addEventListener('keyup',keyUp, true);
