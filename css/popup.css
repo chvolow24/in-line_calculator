@@ -66,5 +66,35 @@ td, th {
   font-size: 12px;
   margin: 10px;
   width: 97%;
-
 }
+
+.slider {
+  width: 80%;
+}
+
+.slider-val {
+  margin-right:75px;
+  font-size: 14px;
+  font-weight: bold;
+  float:right;
+}
+
+.button-container {
+  float:left;
+}
+
+#save-button-container {
+  padding: 10px;
+}
+
+#save-button {
+  font-family:Arial,Sans-serif;
+  font-size:14px;
+  font-weight:bold;
+}
+
+#save-message {
+  margin-top: 4px;
+  font-size: 14px;
+}
+

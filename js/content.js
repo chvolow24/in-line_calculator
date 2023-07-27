@@ -1,22 +1,14 @@
-console.log('In-Line Calculator is active.');
+/*========= Globals ========*/
 
-/*
-=====Globals=====
-  'buffer' stores user's last two keystrokes (never more!)
-  'errResult' stores an error produced in the course of expression evaluation
-  'places' defines how many decimal places to round to
-*/
+var buffer = ''; // Stores user's last two keystrokes (never more!)
+var errResult = ''; // Stores errors thrown in the course of evaluation
+var places = 5; // The number of decimal places to which to round results. User-settable.
 
-var buffer = '';
-var errResult = '';
-var expr = '';
-var places = 5;
-
-// Special regexes that support general operation
+// Special regexes that support basic operation of the tool
 const bracketed = /\[{2}[^[,]*((\]{2})|(\={2}))/;
 const evalTrigger = /((\]{2})|(\={2}))/
 
-// ================================MATH CODE=============================================
+/*============================ MATH CODE ==================================*/
 
 // Regular expressions used in evaluation of math expressions
 const floatReg = /[0-9]*\.?[0-9]+/;
@@ -112,6 +104,7 @@ function validate(str) {
 
 // Evaluate a string as an arithmetic expression return a result
 function parseMath(str) {
+
   str = str.split(' ').join('');
 
   validate(str);
@@ -137,9 +130,9 @@ function parseMath(str) {
   // Evaluate expression with parens removed
   return evalNoParens(str);
 };
-// ================================END MATH CODE=============================================
+/*============================ END MATH CODE ==================================*/
 
-
+// Store the user's 10 most recent expressions
 function storeExpr(exprObject) {
   chrome.storage.sync.get('recentOpsJSON', function(data) {
     var recentsTable = [];
@@ -165,28 +158,17 @@ function storeExpr(exprObject) {
   })
 }
 
-
+// Get the user's rounding setting and assign value to 'places'
 function pullUserOptions() {
   chrome.storage.sync.get('rounding', function(data) {
-    if (data.rounding === undefined) {
-      rounding = 5;
-      chrome.storage.sync.set({"rounding":places}, function() {
-        console.log("[In-Line calculator] Default rounding value set. See options page for customization options.")
-        });
-    }
-    else {
+    if (data.rounding) {
       places = data.rounding;
     };
   });
 }
 
-function pushRecents(recentsTable) {
-  //Stores data on recent operations for display in the popup
-  chrome.storage.sync.set({"recentOpsJSON":recentsTable}, function() {
-    });
-  return;
-}
-
+/* Maintain the two-char buffer; trigger subroutine if two characters represent 
+a user intention (e.g. "==") */
 function bufferHandler(key, element, text, isVal) {
   if (buffer.length < 2) {
     buffer+=key;
@@ -196,9 +178,9 @@ function bufferHandler(key, element, text, isVal) {
     buffer += key;
   }
 
-  // Buffer matches ']]' => trigger evaluation
+  // Buffer matches "]]" or "==" => trigger evaluation
   if (evalTrigger.test(buffer) && bracketed.test(text)) {
-    expr = text.match(bracketed)[0];
+    var expr = text.match(bracketed)[0];
     expr = expr.slice(2,expr.length-2);
     let result = parseMath(expr).toString();
 
@@ -208,7 +190,7 @@ function bufferHandler(key, element, text, isVal) {
       errResult = '';
     }
 
-    // 
+    // Round to 'places'
     if (result.includes('.') && result.split('.')[1].length>places) {
       result = parseFloat(result).toFixed(places);
     }
@@ -242,6 +224,7 @@ function bufferHandler(key, element, text, isVal) {
         setCaretPosition(caretObj.range,caretPosition-2);
 
       }
+      // Reset buffer
       buffer = '';
     }
   }
@@ -287,5 +270,7 @@ function keyUp(event) {
 
 
 window.onload = (event) => {
+  console.log('In-Line Calculator is active.');
+  pullUserOptions();
   window.addEventListener('keyup',keyUp, true);
 }

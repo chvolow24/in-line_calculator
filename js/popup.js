@@ -1,3 +1,41 @@
+function optionsLoad() {
+
+  const roundingSlider = document.getElementById('rounding-slider')
+  const roundingValue = document.getElementById('rounding-value');
+  const saveButton = document.getElementById('save-button');
+  const saveMessage = document.getElementById('save-message');
+
+  var rounding = 7
+  var count = 1
+
+
+  try {
+    chrome.storage.sync.get('rounding', function(data) {
+      rounding = data.rounding
+      roundingValue.innerHTML = rounding + ' places'
+      roundingSlider.value = rounding
+    });
+  }
+  catch {
+      rounding = 7;
+      roundingValue.innerHTML = rounding + ' places'
+      roundingSlider.value = rounding
+  }
+
+  roundingSlider.addEventListener('input', function (e) {
+    rounding = e.target.value
+    roundingValue.innerHTML = rounding + ' places';
+  });
+
+  saveButton.addEventListener('click', function () {
+    chrome.storage.sync.set({"rounding":rounding}, function() {
+      });
+    saveMessage.innerHTML = 'Settings successfully saved. (' + count + ')</br>Refresh page for settings to take effect.';
+    count++;
+  })
+}
+
+
 function pullRecents() {
   chrome.storage.sync.get('recentOpsJSON', function(data) {
     var tableArray = data.recentOpsJSON;
@@ -28,16 +66,13 @@ function pullRecents() {
 }
 
 window.onload = function() {
-  pullRecents();
-  const options = document.getElementById('options-link')
-  const source = document.getElementById('source-link')
 
-  options.addEventListener("click", () => {
-    chrome.tabs.create({ url: "../options.html"});
-  });
+  pullRecents();
+  const source = document.getElementById('source-link')
 
   source.addEventListener("click", () => {
     chrome.tabs.create({ url: "https://github.com/chvolow24/inline-calculator"});
   });
+  optionsLoad();
 
 }
