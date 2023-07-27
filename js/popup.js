@@ -1,15 +1,27 @@
 function pullRecents() {
   chrome.storage.sync.get('recentOpsJSON', function(data) {
     var tableArray = data.recentOpsJSON;
+    if (!tableArray) {
+      tableArray = {expr:'',result:''}
+      , {expr:'',result:''}
+      , {expr:'',result:''}
+      , {expr:'',result:''}
+      , {expr:'',result:''}
+      , {expr:'',result:''}
+      , {expr:'',result:''}
+      , {expr:'',result:''}
+      , {expr:'',result:''}
+      , {expr:'',result:''}
+    }
     var domTable = document.getElementById('recents-table')
 
     for (i=0; i<tableArray.length; i++) {
-        var test = tableArray[i]
+        var element = tableArray[i]
         if (i%2!=0) {
-          domTable.innerHTML += "<tr><td>" + test.expr + "</td><td>" + test.result + "</td></tr>";
+          domTable.innerHTML += "<tr><td>" + element.expr + "</td><td>" + element.result + "</td></tr>";
         }
         else {
-          domTable.innerHTML += "<tr class = 'alt-rows'><td>" + test.expr + "</td><td>" + test.result + "</td></tr>";
+          domTable.innerHTML += "<tr class = 'alt-rows'><td>" + element.expr + "</td><td>" + element.result + "</td></tr>";
         }
       }
   });
@@ -18,7 +30,6 @@ function pullRecents() {
 window.onload = function() {
   pullRecents();
   const options = document.getElementById('options-link')
-  const content = document.getElementById('content')
   const source = document.getElementById('source-link')
 
   options.addEventListener("click", () => {

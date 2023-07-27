@@ -1,9 +1,9 @@
 {
     "name": "In-Line Calculator",
-    "version": "1.2.3",
-    "manifest_version": 2,
+    "version": "2.0.0",
+    "manifest_version": 3,
     "description": "Evaluate simple mathematical expressions as you type!",
-    "permissions": ["activeTab", "storage", "tabs"],
+    "permissions": ["storage", "tabs"],
     "options_page": "options.html",
     "icons": { "16": "img/thumb_16.png",
                "48": "img/thumb_48.png",
@@ -14,9 +14,9 @@
         "js":["js/content.js"]
         }
       ],
-    "browser_action":{
+    "action":{
       "default_popup":"popup.html",
-      "title":"TitleTest"
+      "title":"In-Line Calculator"
     }
 
   }
