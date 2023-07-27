@@ -46,7 +46,8 @@ td, th {
 
 #content {
   padding: 5px;
-  width: 500px;
+  /* width: 50%;
+  height: 90% */
 }
 
 #options-link {

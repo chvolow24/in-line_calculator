@@ -1,6 +1,6 @@
 h1 {
   text-align:center;
-  font-family: Verdana, Geneva, sans-serif;
+  font-family: Verdana, sans-serif;
   font-weight: lighter;
 }
 
@@ -12,9 +12,9 @@ h2 {
 }
 
 h3 {
-  font-family: Verdana, Geneva, sans-serif;
-  font-size: 14px;
-  font-weight: lighter;
+  font-family: Verdana, sans-serif;
+  font-size: 18px;
+  font-weight: normal;
 }
 
 p {
@@ -24,10 +24,13 @@ p {
 }
 
 input {
-  width:90%;
   font-size: 14px;
 }
 
+.content {
+  padding: 10px;
+  width: 500px;
+}
 .examples {
   line-height: 1.6;
   padding-bottom: 5px;
@@ -35,9 +38,10 @@ input {
   text-indent: -10px;
 }
 
-#content {
-  width: 500px;
-  height: 1900;
+.try-it {
+  height: 200px;
+  width: 98%;
+  font-size: 16px;
 }
 
 #options_link {

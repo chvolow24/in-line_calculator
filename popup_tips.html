@@ -7,27 +7,29 @@
     <script src="js/content.js"></script>
   </head>
   <body>
-    <div id='content'>
+    <div class='content'>
       <p>
         <a href=popup.html>< Back</a>
       </p>
-      <h2>Supported characters/operations:</h2>
+      <p style = "text-align:center;">__________________________________________________________</p>
+      <h2>Supported characters / operations:</h2>
       <p id='supported'>+  -  *  /  ^  (  )</p>
-      <h3><b>In most text input areas on most webpages,</b> type your expressions between double square brackets. For example:</h3>
+      <p style = "text-align:center;">__________________________________________________________</p>
+      <p>On <b>most</b> web pages, in most text areas:</p>
+      <p>1. Type <b>[[</b> to "open" the calculator.</p>
+      <p>2. Type the expression you want to evaluate</p>
+      <p>3a. Type <b>==</b> to evaluate and leave the calculator "open", <b>OR</b></p>
+      <p>3b. Type <b>]]</b> to "close" the calculator.</p>
       <div class = 'examples'>
-        <p>[[2+2]]</p>
-        <p>[[3-(4*.2)]]</p>
-        <p>[[(.5*.44-.2)^(1/5)+12]]</p>
+        <div class='examples'>
+          <p>[[2+2==<br> --> <b>[[4</b></p>
+          <p>[[4 -(4*.2) ==<br> --> <b>[[3.2</b></p>
+          <p>[[2.2 - 5 ]]<br>  --> <b>-3.2</b></p>
+          <p>[[(.5*.44)^(1/5)+12]]<br> --> <b>12.7387</b></p>
+        </div>
       </div>
-      <h3>The expressions will be evaluated and the text replaced as soon as you type the second closing bracket:</h3>
-      <div class='examples'>
-        <p>[[2+2]]<br> --> <b>[[4</b></p>
-        <p>[[3-(4*.2)]]<br> --> <b>[[2.2</b></p>
-        <p>[[(.5*.44)^(1/5)+12]]<br> --> <b>[[12.7387</b></p>
-      </div>
-      <h3>The brackets remain open so you can perform successive operations quickly without touching the mouse. Simply add a third closing bracket when you're done to "exit" the calculator.</h3>
       <h3>Try it!</h3>
-      <input></input>
+      <textarea class = "try-it" value="Try it out: [[(your math goes here)"></textarea>
     </div>
   </body>
 </html>

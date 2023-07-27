@@ -4,7 +4,7 @@
     "manifest_version": 3,
     "description": "Evaluate simple mathematical expressions as you type!",
     "permissions": ["storage", "tabs"],
-    "options_page": "options.html",
+    // "options_page": "options.html",
     "icons": { "16": "img/thumb_16.png",
                "48": "img/thumb_48.png",
               "128": "img/thumb_128.png" },
