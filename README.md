@@ -1,6 +1,6 @@
 ## [[ IN-LINE CALCULATOR ]]
 
-A productivity tool for doing math on the fly while typing on a web page, without dependence on an external calculator tool.
+A browser extension for doing math on the fly while typing on a web page, without dependence on an external calculator tool.
 
 ## Method
 
@@ -17,6 +17,10 @@ The bracketed expression is treated as a string and evaluated piecemeal accordin
 - The calculator doesn't work everywhere. (google docs, chrome "omnibox")
 
 ## Version history
+
+v1.4.1
+- portability; adding to Firefox
+- escaping HTML in recent exprs table
 
 v1.4.0
 - incorporated JS Math object to remove my own (bad) algorithms

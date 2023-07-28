@@ -1,20 +1,16 @@
 h1 {
   text-align:center;
-  font-family: Verdana, Geneva, sans-serif;
   margin-bottom: 0px;
   margin-top: 8px;
 }
 
 h3 {
-  font-family: Verdana, Geneva, sans-serif;
   font-size: 18px;
 }
 
 p {
-  font-family: Verdana, Geneva, sans-serif;
   font-size: 16px;
   margin-left: 10px;
-
 }
 
 th {
@@ -42,7 +38,6 @@ td, th {
 .horizontal {
   text-align: center;
 }
-
 
 #content {
   padding: 5px;
@@ -99,3 +94,6 @@ td, th {
   font-size: 14px;
 }
 
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}

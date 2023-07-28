@@ -134,9 +134,16 @@ function parseMath(str) {
 
 // Store the user's 10 most recent expressions
 function storeExpr(exprObject) {
-  chrome.storage.sync.get('recentOpsJSON', function(data) {
+  let browserObj;
+  if (window.chrome) {
+    browserObj = chrome;
+  } else {
+    browserObj = browser;
+  }
+
+  browserObj.storage.sync.get('recentOpsJSON', function(data) {
     var recentsTable = [];
-    if (!data.recentOpsJSON || data.recentOpsJSON.length < 10) {
+    if (!data || !data.recentOpsJSON || data.recentOpsJSON.length < 10) {
       recentsTable = [
         {expr:'',result:''}
         , {expr:'',result:''}
@@ -149,18 +156,26 @@ function storeExpr(exprObject) {
         , {expr:'',result:''}
         , {expr:'',result:''}
       ];
+
     } else {
         recentsTable = data.recentOpsJSON;
     }
+    console.log(recentsTable);
     recentsTable.pop();
     recentsTable.unshift(exprObject);
-    chrome.storage.sync.set({"recentOpsJSON":recentsTable});
+    browserObj.storage.sync.set({"recentOpsJSON":recentsTable});
   })
 }
 
 // Get the user's rounding setting and assign value to 'places'
 function pullUserOptions() {
-  chrome.storage.sync.get('rounding', function(data) {
+  let browserObj;
+  if (window.chrome) {
+    browserObj = chrome;
+  } else {
+    browserObj = browser;
+  }
+  browserObj.storage.sync.get('rounding', function(data) {
     if (data.rounding) {
       places = data.rounding;
     };

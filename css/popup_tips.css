@@ -1,24 +1,20 @@
 h1 {
   text-align:center;
-  font-family: Verdana, sans-serif;
   font-weight: lighter;
 }
 
 h2 {
   text-align: center;
-  font-family: 'open sans', sans-serif;
   font-size: 18px;
   font-weight: bold;
 }
 
 h3 {
-  font-family: Verdana, sans-serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: normal;
 }
 
 p {
-  font-family: Verdana, Geneva, sans-serif;
   font-size: 14px;
   font-weight: lighter;
 }
@@ -32,7 +28,7 @@ input {
   width: 500px;
 }
 .examples {
-  line-height: 1.6;
+  line-height: 1.5;
   padding-bottom: 5px;
   padding-left: 60px;
   text-indent: -10px;
@@ -55,4 +51,8 @@ input {
   font-family: 'Open sans' sans-serif;
   font-weight: bolder;
   font-size: 24px;
+}
+
+body {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
