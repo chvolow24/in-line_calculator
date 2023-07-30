@@ -3,10 +3,12 @@
 var buffer = ''; // Stores user's last two keystrokes (never more!)
 var errResult = ''; // Stores errors thrown in the course of evaluation
 var places = 5; // The number of decimal places to which to round results. User-settable.
+var replacementDidOccur = false // true if text replacement occurred on the last keystroke
 
 // Special regexes that support basic operation of the tool
-const bracketed = /\[{2}[^[,]*((\]{2})|(\={2}))/;
-const evalTrigger = /((\]{2})|(\={2}))/
+const bracketed = /\[{2}([^[]*)((\]{2})|(\={2})|(\,\=)|(\$\=))/;
+const evalTrigger = /((\]{2})|(\={2})|(\$\=)|(\,\=))/;
+const openResult = /^[\d\,\$\.\s]*$/
 
 /*============================ MATH CODE ==================================*/
 
@@ -160,7 +162,6 @@ function storeExpr(exprObject) {
     } else {
         recentsTable = data.recentOpsJSON;
     }
-    console.log(recentsTable);
     recentsTable.pop();
     recentsTable.unshift(exprObject);
     browserObj.storage.sync.set({"recentOpsJSON":recentsTable});
@@ -182,66 +183,133 @@ function pullUserOptions() {
   });
 }
 
+// Reformat a numeral with commas
+function addCommas(numeralString) {
+  var ret = "";
+  var i = numeralString.length - 1;
+  if (/\./.test(numeralString)) {
+    while (i>0 && numeralString[i] != '.') {
+      ret = numeralString[i] + ret;
+      i--;
+    }
+    ret = "." + ret;
+    i--;
+  }
+  var onesIndex = i;
+  while (i >= 0) {
+    if ((i - onesIndex) % 3 == 0 && (i != onesIndex)) {
+      ret = numeralString[i] + "," + ret;
+    } else {
+      ret = numeralString[i] + ret;
+    }
+    i--;
+  }
+  return ret;
+}
+
+// Create a USD-format string from a float
+function toUSD(someFloat) {
+  return "$" + addCommas(someFloat.toFixed(2));
+}
+
+function evaluateExpr(expr, buffer) {
+  // Ignore commas and dollar signs in input
+  expr = expr.replaceAll("$","").replaceAll(",","");
+
+  // Evaluate expression
+  let result = parseMath(expr).toString();
+
+  // Check global 'errResult' for error text. If present, display error as result.
+  if (errResult != '') {
+    result = errResult;
+    errResult = '';
+  }
+
+  // Round to 'places'
+  if (buffer != "$=" && result.includes('.') && result.split('.')[1].length>places) {
+    result = parseFloat(result).toFixed(places);
+  }
+  // Convert to currency format if requested by user
+  if (buffer == "$=" && errResult == '') {
+    result = toUSD(parseFloat(result));
+  }
+  // Add commas to numbers if requested by user
+  if (buffer == ",=" && errResult == '') {
+    result = addCommas(result);
+  }
+  return result;
+
+}
+
+function escapeDollars(dStr) {
+  var ret = "";
+  for (var i=0; i<dStr.length; i++) {
+    if (dStr[i] == "$") {
+      ret += "$$";
+    } else {
+      ret += dStr[i];
+    }
+  }
+  return ret;
+}
+
 /* Maintain the two-char buffer; trigger subroutine if two characters represent 
 a user intention (e.g. "==") */
 function bufferHandler(key, element, text, isVal) {
+
+  if (key === "Shift") {
+    return;
+  }
   if (buffer.length < 2) {
     buffer+=key;
   }
-  if (buffer.length >= 2) {
-    buffer = buffer.slice(1,2)
+  else {
+    buffer = buffer.slice(1,2);
     buffer += key;
   }
-
-  // Buffer matches "]]" or "==" => trigger evaluation
+  // Buffer matches "==", ",=", "$=", or "]]" => trigger evaluation
   if (evalTrigger.test(buffer) && bracketed.test(text)) {
-    var expr = text.match(bracketed)[0];
-    expr = expr.slice(2,expr.length-2);
-    let result = parseMath(expr).toString();
 
-    // Check global 'errResult' for error text. If present, display error as result.
-    if (errResult != '') {
-      result = errResult;
-      errResult = '';
+    // Get expression to evaluate. First capture group excludes opening brackets.
+    var expr = text.match(bracketed)[1];
+    var result;
+    var replaceText;
+    if (openResult.test(expr) && buffer == "]]") {
+      result = expr;
+      replaceText = text.replace(bracketed, escapeDollars(result));
+    } else {
+      result = evaluateExpr(expr, buffer);
+      if (buffer != "]]") {
+        replaceText = text.replace(bracketed, "[[" + escapeDollars(result));
+      } else {
+        replaceText = text.replace(bracketed, escapeDollars(result));
+      }
+      // Store the expression for display in the recents table popup
+      let objToPush = {expr:expr, result:result};
+      storeExpr(objToPush);
     }
 
-    // Round to 'places'
-    if (result.includes('.') && result.split('.')[1].length>places) {
-      result = parseFloat(result).toFixed(places);
-    }
-
-    // Store the expression for display in the recents table popup
-    let objToPush = {expr:expr, result:result};
-    storeExpr(objToPush);
-
-    //
-    let caretDif = result.length-(expr.length+2);
+    // Set the caret position
+    // let caretDif = result.length-(expr.length+2);
+    let caretDif = replaceText.length - text.length;
     let caretObj = getCaretPosition(isVal,element);
     let caretPosition = caretObj.offset;
 
-    let replaceText = text.replace(bracketed, '[[' + result);
-
+    // Replace the expression with the result
     if (isVal) {
       element.value = replaceText;
     }
     else {
       element.nodeValue = replaceText;
-      setCaretPosition(caretObj.range,caretPosition+caretDif);
+      setCaretPosition(caretObj.range, caretPosition+caretDif);
     }
-    if (buffer === ']]') {
-      if (isVal) {
-        element.value = text.replace(bracketed,result);
-      }
-      else {
-        let caretObj = getCaretPosition(isVal,element);
-        let caretPosition = caretObj.offset;
-        element.nodeValue = text.replace(bracketed,result);
-        setCaretPosition(caretObj.range,caretPosition-2);
 
-      }
-      // Reset buffer
-      buffer = '';
-    }
+    replacementDidOccur = true;
+    buffer = '';
+
+    // Dispatch input event to element to display value update
+    const inputEvent = new Event('input', { bubbles: true });
+    element.dispatchEvent(inputEvent);
   }
 };
 
@@ -265,7 +333,8 @@ function setCaretPosition(range,position) {
   range.setEnd(range.endContainer,position);
 }
 
-function keyUp(event) {
+// Top-level function to handle keyups. Identifies active element and calls buffer handler
+function keyDown(event) {
   let text = '';
   let isVal = true;
   let element;
@@ -275,17 +344,43 @@ function keyUp(event) {
   }
   else {
     element = window.getSelection().anchorNode;
-    if (element.nodeValue) {
-      text = element.nodeValue;
+    if (!element || !element.nodeValue) {
+      return;
     }
+    text = element.nodeValue;
     isVal = false;
   }
-  bufferHandler(event.key,element,text,isVal);
+  text += event.key;
+  bufferHandler(event.key, element, text, isVal);
 }
 
-
-window.onload = () => {
-  console.log('In-Line Calculator is active.');
-  pullUserOptions();
-  window.addEventListener('keyup',keyUp, true);
+function keyUp(event) {
+  if (replacementDidOccur) {
+    let element, isVal;
+    if (typeof(event.target.value) === 'string') {
+      element = event.target;
+      text = event.target.value;
+      isVal = true;
+    }
+    else {
+      element = window.getSelection().anchorNode;
+      if (!element || !element.nodeValue) {
+        return;
+      }
+      text = element.nodeValue;
+      isVal = false;
+    }
+    if (isVal) {
+      element.value = element.value.slice(0, element.value.length - 1);
+    }
+    else {
+      element.nodeValue = element.nodeValue.slice(0, element.nodeValue.length - 1);
+    }
+    replacementDidOccur = false;
+  }
 }
+
+console.log("In-line Calculator is active")
+pullUserOptions();
+window.addEventListener('keydown',keyDown, true);
+window.addEventListener('keyup', keyUp, true);

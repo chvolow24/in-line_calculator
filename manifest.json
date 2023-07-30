@@ -1,9 +1,9 @@
 {
     "name": "In-Line Calculator",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "manifest_version": 3,
     "description": "Evaluate simple mathematical expressions as you type!",
-    "permissions": ["storage", "tabs"],
+    "permissions": ["storage"],
     "icons": { "16": "img/thumb_16.png",
                "48": "img/thumb_48.png",
               "128": "img/thumb_128.png" 

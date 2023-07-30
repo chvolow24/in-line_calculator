@@ -18,6 +18,14 @@ The bracketed expression is treated as a string and evaluated piecemeal accordin
 
 ## Version history
 
+v1.5.0
+- include ",=" and "$=" evaluators
+- accept dollars and commas in input
+- bug fixed
+
+v1.4.2
+- dispatch input event to element
+
 v1.4.1
 - portability; adding to Firefox
 - escaping HTML in recent exprs table
