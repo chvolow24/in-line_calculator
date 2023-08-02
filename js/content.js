@@ -8,7 +8,7 @@ var replacementDidOccur = false // true if text replacement occurred on the last
 // Special regexes that support basic operation of the tool
 const bracketed = /\[{2}([^[]*)((\]{2})|(\={2})|(\,\=)|(\$\=))/;
 const evalTrigger = /((\]{2})|(\={2})|(\$\=)|(\,\=))/;
-const openResult = /^[\d\,\$\.\s]*$/
+const openResult = /^\$?-?[\d\,\.\s]*$/
 
 /*============================ MATH CODE ==================================*/
 
@@ -197,7 +197,7 @@ function addCommas(numeralString) {
   }
   var onesIndex = i;
   while (i >= 0) {
-    if ((i - onesIndex) % 3 == 0 && (i != onesIndex)) {
+    if ((i - onesIndex) % 3 == 0 && (i != onesIndex) && (numeralString[i] != "-")) {
       ret = numeralString[i] + "," + ret;
     } else {
       ret = numeralString[i] + ret;
@@ -267,9 +267,12 @@ function bufferHandler(key, element, text, isVal) {
     buffer = buffer.slice(1,2);
     buffer += key;
   }
+  console.log(`buffer: ${buffer}`)
+  console.log(`regex matches: ${evalTrigger.test(buffer)}, ${bracketed.test(text)}`);
+  console.log(`text: ${text}`);
   // Buffer matches "==", ",=", "$=", or "]]" => trigger evaluation
   if (evalTrigger.test(buffer) && bracketed.test(text)) {
-
+    console.log(`Eval on isVal: ${isVal}`);
     // Get expression to evaluate. First capture group excludes opening brackets.
     var expr = text.match(bracketed)[1];
     var result;
@@ -289,27 +292,35 @@ function bufferHandler(key, element, text, isVal) {
       storeExpr(objToPush);
     }
 
-    // Set the caret position
-    // let caretDif = result.length-(expr.length+2);
-    let caretDif = replaceText.length - text.length;
-    let caretObj = getCaretPosition(isVal,element);
-    let caretPosition = caretObj.offset;
 
     // Replace the expression with the result
     if (isVal) {
       element.value = replaceText;
     }
     else {
+      console.log(`Replace text: ${replaceText}`)
+
+      // Set the caret position
+      // let caretDif = result.length-(expr.length+2);
+
+      let caretDif =  replaceText.length - element.nodeValue.length;
+      console.log(`caretDif: ${caretDif}`);
+      let caretObj = getCaretPosition(isVal,element);
+      let caretPosition = caretObj.offset;
+      console.log(`CaretPosition: ${caretPosition}`)
       element.nodeValue = replaceText;
+      console.log(`Setting caret position to ${caretPosition+caretDif}`)
       setCaretPosition(caretObj.range, caretPosition+caretDif);
+      // setCaretPosition(caretObj.range, 50);
     }
 
-    replacementDidOccur = true;
-    buffer = '';
+
 
     // Dispatch input event to element to display value update
     const inputEvent = new Event('input', { bubbles: true });
     element.dispatchEvent(inputEvent);
+    replacementDidOccur = true;
+    buffer = '';
   }
 };
 
@@ -339,6 +350,11 @@ function keyDown(event) {
   let isVal = true;
   let element;
   if (typeof(event.target.value) === 'string') {
+    console.log(`IS VALevent target textContent: ${event.target.textContent}`);
+
+    if (buffer == "99") {
+      event.target.textContent = "I am a chicken"
+    }
     element = event.target;
     text = event.target.value;
   }
@@ -346,6 +362,12 @@ function keyDown(event) {
     element = window.getSelection().anchorNode;
     if (!element || !element.nodeValue) {
       return;
+    }
+    console.log(`element nodevalue: ${element.nodeValue}, innerhtML: ${element.innerHTML}`)
+    console.log(element);
+    console.log(`event target textContent: ${event.target.textContent}`);
+    if (buffer == "99") {
+      event.target.textContent = "I am a chicken"
     }
     text = element.nodeValue;
     isVal = false;
@@ -374,7 +396,11 @@ function keyUp(event) {
       element.value = element.value.slice(0, element.value.length - 1);
     }
     else {
+      let caretObj = getCaretPosition(isVal,element);
+      let caretPosition = caretObj.offset;
       element.nodeValue = element.nodeValue.slice(0, element.nodeValue.length - 1);
+      setCaretPosition(caretObj.range, caretPosition-1);
+
     }
     replacementDidOccur = false;
   }
