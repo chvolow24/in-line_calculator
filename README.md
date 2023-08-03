@@ -21,7 +21,8 @@ The bracketed expression is treated as a string and evaluated piecemeal accordin
 v1.5.0
 - include ",=" and "$=" evaluators
 - accept dollars and commas in input
-- bug fixed
+- bug fixes
+- updated docs
 
 v1.4.2
 - dispatch input event to element
@@ -47,3 +48,7 @@ v1.2.2
 - added jira rich text comment functionality
 
 (Previous versions not tracked here.)
+
+### Demo
+
+There's a quick demo video here: https://www.youtube.com/watch?v=W13t7qmyRR4
