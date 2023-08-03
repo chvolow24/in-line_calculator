@@ -4,9 +4,10 @@ var buffer = ''; // Stores user's last two keystrokes (never more!)
 var errResult = ''; // Stores errors thrown in the course of evaluation
 var places = 5; // The number of decimal places to which to round results. User-settable.
 var replacementDidOccur = false // true if text replacement occurred on the last keystroke
+var lastResult; // store the last result for special keystroke operation (see keyUp handler)
 
 // Special regexes that support basic operation of the tool
-const bracketed = /\[{2}([^[]*)((\]{2})|(\={2})|(\,\=)|(\$\=))/;
+const bracketed = /\[{2}([\s\d\.\,\$\+\-\*\/\^\(\)]*)([\],\=,\,,\$])/;
 const evalTrigger = /((\]{2})|(\={2})|(\$\=)|(\,\=))/;
 const openResult = /^\$?-?[\d\,\.\s]*$/
 
@@ -134,6 +135,7 @@ function parseMath(str) {
 };
 /*============================ END MATH CODE ==================================*/
 
+
 // Store the user's 10 most recent expressions
 function storeExpr(exprObject) {
   let browserObj;
@@ -212,11 +214,12 @@ function toUSD(someFloat) {
   return "$" + addCommas(someFloat.toFixed(2));
 }
 
+// Outer evaluation function, incl. interpretation of user intention
 function evaluateExpr(expr, buffer) {
   // Ignore commas and dollar signs in input
   expr = expr.replaceAll("$","").replaceAll(",","");
 
-  // Evaluate expression
+  // Evaluate mathematical expression
   let result = parseMath(expr).toString();
 
   // Check global 'errResult' for error text. If present, display error as result.
@@ -241,6 +244,7 @@ function evaluateExpr(expr, buffer) {
 
 }
 
+// For regex replacements, dollar signs needs to be doubled
 function escapeDollars(dStr) {
   var ret = "";
   for (var i=0; i<dStr.length; i++) {
@@ -253,157 +257,172 @@ function escapeDollars(dStr) {
   return ret;
 }
 
+
+// Helper function to find the text node and update the offset
+function findTextNodeAndOffset(node, targetOffset) {
+  if (node.nodeType === Node.TEXT_NODE) {
+    if (node.textContent.length >= targetOffset) {
+      return { textNode: node, offsetWithinNode: targetOffset };
+    } else {
+      targetOffset -= node.textContent.length;
+    }
+  } else {
+    for (let i = 0; i < node.childNodes.length; i++) {
+      const result = findTextNodeAndOffset(node.childNodes[i], targetOffset);
+      if (result) {
+        return result;
+      }
+    }
+  }
+}
+
+//
+function setCursorAtOffset(element, offset) {
+  if (typeof(element.value) == "string") {
+    element.selectionStart = offset;
+    element.selectionEnd = offset;
+    return;
+  }
+
+  let ret = findTextNodeAndOffset(element, offset);
+
+  textNode = ret.textNode;
+  offsetWithinNode = ret.offsetWithinNode;
+
+  // Create a range and set the cursor position
+  const range = document.createRange();
+  range.setStart(textNode, offsetWithinNode);
+  range.collapse(true);
+
+  // Set the selection
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(range);
+}
+
+function tryEvaluation(target) {
+  let selection = window.getSelection();
+  let element;
+  let textContent;
+
+  if (typeof(target.value) == "string") {
+    element = target;
+    textContent = target.value;
+  } else {
+    let levels = 0;
+    element = selection.anchorNode;
+    textContent = element.textContent;
+    while (!(bracketed.test(textContent)) && levels < 4) {
+      element = element.parentNode;
+      textContent = element.textContent;
+      levels += 1;
+    }
+  }
+
+  if (!(bracketed.test(textContent))) {
+    console.log("[In-Line Calculator] evaluation keystrokes heard, but text cannot be replaced safely.");
+    return;
+  }
+
+  let expr = textContent.match(bracketed)[1];
+  if (!expr) {
+    return;
+  }
+
+  console.l
+  let matchStart = textContent.search(bracketed);
+
+  let result;
+  let replaceText;
+
+  let newCursorPos = matchStart;
+  if (openResult.test(expr) && buffer == "]]") {
+    result = expr;
+    replaceText = textContent.replace(bracketed, escapeDollars(result));
+  } else {
+    result = evaluateExpr(expr, buffer);
+    if (buffer != "]]") {
+      replaceText = textContent.replace(bracketed, "[[" + escapeDollars(result));
+      newCursorPos += 2;
+    } else {
+      replaceText = textContent.replace(bracketed, escapeDollars(result));
+    }
+
+    // Store the expression for display in the recents table popup
+    let objToPush = {expr:expr, result:result};
+    storeExpr(objToPush);
+  }
+  newCursorPos += result.length;
+
+  if (typeof(target.value) == "string") {
+    element.value = replaceText;
+  } else {
+    element.textContent = replaceText;
+  }
+
+  setCursorAtOffset(element, newCursorPos);
+
+  // Dispatch input event to element to display value update
+  const inputEvent = new Event('input', { bubbles: true });
+  element.dispatchEvent(inputEvent);
+  replacementDidOccur = true;
+  lastResult = result;
+  buffer = '';
+}
+
+
 /* Maintain the two-char buffer; trigger subroutine if two characters represent 
 a user intention (e.g. "==") */
-function bufferHandler(key, element, text, isVal) {
+
+function bufferHandler(key, target) {
 
   if (key === "Shift") {
     return;
   }
   if (buffer.length < 2) {
-    buffer+=key;
+    buffer += key;
   }
   else {
     buffer = buffer.slice(1,2);
     buffer += key;
   }
-  console.log(`buffer: ${buffer}`)
-  console.log(`regex matches: ${evalTrigger.test(buffer)}, ${bracketed.test(text)}`);
-  console.log(`text: ${text}`);
+
   // Buffer matches "==", ",=", "$=", or "]]" => trigger evaluation
-  if (evalTrigger.test(buffer) && bracketed.test(text)) {
-    console.log(`Eval on isVal: ${isVal}`);
-    // Get expression to evaluate. First capture group excludes opening brackets.
-    var expr = text.match(bracketed)[1];
-    var result;
-    var replaceText;
-    if (openResult.test(expr) && buffer == "]]") {
-      result = expr;
-      replaceText = text.replace(bracketed, escapeDollars(result));
-    } else {
-      result = evaluateExpr(expr, buffer);
-      if (buffer != "]]") {
-        replaceText = text.replace(bracketed, "[[" + escapeDollars(result));
-      } else {
-        replaceText = text.replace(bracketed, escapeDollars(result));
-      }
-      // Store the expression for display in the recents table popup
-      let objToPush = {expr:expr, result:result};
-      storeExpr(objToPush);
-    }
-
-
-    // Replace the expression with the result
-    if (isVal) {
-      element.value = replaceText;
-    }
-    else {
-      console.log(`Replace text: ${replaceText}`)
-
-      // Set the caret position
-      // let caretDif = result.length-(expr.length+2);
-
-      let caretDif =  replaceText.length - element.nodeValue.length;
-      console.log(`caretDif: ${caretDif}`);
-      let caretObj = getCaretPosition(isVal,element);
-      let caretPosition = caretObj.offset;
-      console.log(`CaretPosition: ${caretPosition}`)
-      element.nodeValue = replaceText;
-      console.log(`Setting caret position to ${caretPosition+caretDif}`)
-      setCaretPosition(caretObj.range, caretPosition+caretDif);
-      // setCaretPosition(caretObj.range, 50);
-    }
-
-
-
-    // Dispatch input event to element to display value update
-    const inputEvent = new Event('input', { bubbles: true });
-    element.dispatchEvent(inputEvent);
-    replacementDidOccur = true;
-    buffer = '';
+  if (evalTrigger.test(buffer)) {
+    tryEvaluation(target);
   }
 };
 
-function getCaretPosition(isVal,target) {
-  const isSupported = typeof window.getSelection !== "undefined";
-  if (isSupported && !isVal) {
-    let selection = window.getSelection();
-    let range = window.getSelection().getRangeAt(0);
-    return {'node':selection.anchorNode,'offset':selection.anchorOffset,'range':range};
-  }
-  if (isSupported && isVal) {
-    return {'node':document.activeElement,'offset':target.selectionStart,};
-  }
-  else {
-    return {'node':document.activeElement,'offset':0};
-  }
-}
-
-function setCaretPosition(range,position) {
-  range.setStart(range.endContainer,position);
-  range.setEnd(range.endContainer,position);
-}
-
 // Top-level function to handle keyups. Identifies active element and calls buffer handler
 function keyDown(event) {
-  let text = '';
-  let isVal = true;
-  let element;
-  if (typeof(event.target.value) === 'string') {
-    console.log(`IS VALevent target textContent: ${event.target.textContent}`);
-
-    if (buffer == "99") {
-      event.target.textContent = "I am a chicken"
-    }
-    element = event.target;
-    text = event.target.value;
-  }
-  else {
-    element = window.getSelection().anchorNode;
-    if (!element || !element.nodeValue) {
-      return;
-    }
-    console.log(`element nodevalue: ${element.nodeValue}, innerhtML: ${element.innerHTML}`)
-    console.log(element);
-    console.log(`event target textContent: ${event.target.textContent}`);
-    if (buffer == "99") {
-      event.target.textContent = "I am a chicken"
-    }
-    text = element.nodeValue;
-    isVal = false;
-  }
-  text += event.key;
-  bufferHandler(event.key, element, text, isVal);
+  bufferHandler(event.key, event.target);
 }
 
 function keyUp(event) {
   if (replacementDidOccur) {
-    let element, isVal;
-    if (typeof(event.target.value) === 'string') {
-      element = event.target;
-      text = event.target.value;
-      isVal = true;
-    }
-    else {
-      element = window.getSelection().anchorNode;
-      if (!element || !element.nodeValue) {
-        return;
-      }
-      text = element.nodeValue;
-      isVal = false;
-    }
-    if (isVal) {
-      element.value = element.value.slice(0, element.value.length - 1);
-    }
-    else {
-      let caretObj = getCaretPosition(isVal,element);
-      let caretPosition = caretObj.offset;
-      element.nodeValue = element.nodeValue.slice(0, element.nodeValue.length - 1);
-      setCaretPosition(caretObj.range, caretPosition-1);
 
+    let selection = window.getSelection();
+    // let cursorOffset = selection.getRangeAt(0).endOffset;
+    let cursorOffset = selection.anchorOffset;
+
+    let element;
+    if (typeof(event.target.value) == "string"){
+      element = event.target;
+      cursorOffset = element.selectionStart;
+      element.value = element.value.replace(lastResult + event.key, lastResult);      
+    } else {
+      element = selection.anchorNode;
+      element.textContent = element.textContent.replace(lastResult + event.key, lastResult)
     }
+
+    setCursorAtOffset(element, cursorOffset-1);
+  
+    // Dispatch input event to element to display value update
+    const inputEvent = new Event('input', { bubbles: true});
+    element.dispatchEvent(inputEvent);
     replacementDidOccur = false;
   }
+
 }
 
 console.log("In-line Calculator is active")

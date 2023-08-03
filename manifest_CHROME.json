@@ -17,10 +17,5 @@
     ],
     "action":{
       "default_popup":"popup.html"
-    },
-    "browser_specific_settings": {
-      "gecko": {
-        "id": "in-line_calculator@charlie-volow.com"      
-      }
-    }    
+    }
   }
