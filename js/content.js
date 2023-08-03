@@ -138,6 +138,8 @@ function parseMath(str) {
 
 // Store the user's 10 most recent expressions
 function storeExpr(exprObject) {
+
+  // Portability
   let browserObj;
   if (window.chrome) {
     browserObj = chrome;
@@ -145,6 +147,7 @@ function storeExpr(exprObject) {
     browserObj = browser;
   }
 
+  // Get recent operations JSON, if it exists
   browserObj.storage.sync.get('recentOpsJSON', function(data) {
     var recentsTable = [];
     if (!data || !data.recentOpsJSON || data.recentOpsJSON.length < 10) {
@@ -164,6 +167,8 @@ function storeExpr(exprObject) {
     } else {
         recentsTable = data.recentOpsJSON;
     }
+
+    // Pop the last element and insert the new one at the top
     recentsTable.pop();
     recentsTable.unshift(exprObject);
     browserObj.storage.sync.set({"recentOpsJSON":recentsTable});
@@ -222,26 +227,30 @@ function evaluateExpr(expr, buffer) {
   // Evaluate mathematical expression
   let result = parseMath(expr).toString();
 
-  // Check global 'errResult' for error text. If present, display error as result.
-  if (errResult != '') {
-    result = errResult;
-    errResult = '';
+  if (result == "NaN") {
+    errResult = "error";
   }
 
+
   // Round to 'places'
-  if (buffer != "$=" && result.includes('.') && result.split('.')[1].length>places) {
+  if (buffer != "$=" && errResult == "" && result.includes('.') && result.split('.')[1].length>places) {
     result = parseFloat(result).toFixed(places);
   }
   // Convert to currency format if requested by user
-  if (buffer == "$=" && errResult == '') {
+  if (buffer == "$=" && errResult == "") {
     result = toUSD(parseFloat(result));
   }
   // Add commas to numbers if requested by user
-  if (buffer == ",=" && errResult == '') {
+  if (buffer == ",=" && errResult == "") {
     result = addCommas(result);
   }
-  return result;
 
+  // Check global 'errResult' for error text. If present, display error as result.
+  if (errResult != "") {
+    result = errResult;
+    errResult = "";
+  }
+  return result;
 }
 
 // For regex replacements, dollar signs needs to be doubled
@@ -426,6 +435,7 @@ function keyUp(event) {
 }
 
 console.log("In-line Calculator is active")
+
 pullUserOptions();
 window.addEventListener('keydown',keyDown, true);
 window.addEventListener('keyup', keyUp, true);

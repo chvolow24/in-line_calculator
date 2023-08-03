@@ -14,24 +14,51 @@
       </p>
       <p style = "text-align:center;">__________________________________________________________</p>
       <h2>Supported characters / operations:</h2>
-      <p id='supported'>+  -  *  /  ^  (  )</p>
+      <p class='supported'>+  -  *  /  ^  (  )</p>
       <p style = "text-align:center;">__________________________________________________________</p>
-      <p>On <b>most</b> web pages, in most text areas:</p>
-      <p>1. Type <b>[[</b> to "open" the calculator.</p>
+      <h4>In most text areas on most web pages:</h4>
+      <p>1. Type <span class="ensquare">[[</span> to "open" the calculator.</p>
       <p>2. Type the expression you want to evaluate</p>
-      <p>3a. Type <b>==</b> to evaluate and leave the calculator "open", <b>OR</b></p>
-      <p>3b. Type <b>]]</b> to "close" the calculator.</p>
-      <div class = 'examples'>
-        <div class='examples'>
-          <p>[[2+2==<br> --> <b>[[4</b></p>
-          <p>[[4 -(4*.2) ==<br> --> <b>[[3.2</b></p>
-          <p>[[2.2 - 5 ]]<br>  --> <b>-3.2</b></p>
-          <p>[[(.5*.44)^(1/5)+12]]<br> --> <b>12.7387</b></p>
+      <p>3a. Type <span class="ensquare">==</span> to evaluate and leave the calculator "open", OR </p>
+      <p>3b. Type <span class="ensquare">]]</span> to "close" the calculator.</p>
+      <div class = "ensquare">
+        <div class="examples">
+          <p>
+            [[2+2==<br>&emsp;-->&emsp;&emsp;&emsp;&emsp;<b>[[4</b>
+          </p>
+          <p>
+            [[4 -(4*.2) ==<br>&emsp;-->&emsp;&emsp;&emsp;&emsp;<b>[[3.2</b>
+          </p>
+          <p>
+            [[2.2 - 5 ]]<br>&emsp;-->&emsp;&emsp;&emsp;&emsp;<b>-3.2</b>
+          </p>
+          <p>
+            [[(.5*.44)^(1/5)+12]]<br>&emsp;-->&emsp;&emsp;&emsp;&emsp;<b>12.7387</b>
+          </p>
         </div>
       </div>
-      <h3>Try it!</h3>
+      <h4>Format results</h4>
+      <p>
+        Type <span class="ensquare">,=</span> to format the result with commas, 
+        or <span class="ensquare">$=</span> to format the result as a currency.
+      </p>
+      <div class = "ensquare">
+        <div class="examples">
+          <p>
+            [[2,243 ^ 2 ,=<br>&emsp;-->&emsp;&emsp;&emsp;&emsp;<b>[[5,031,049</b>
+          </p>
+          <p>
+            [[2459.33 * 1.02^50  $=<br>&emsp;-->&emsp;&emsp;&emsp;&emsp;<b>[[$6,619.50</b>
+          </p>
+        </div>
+      </div>
+      <h4>Try it!</h4>
       <textarea class = "try-it" id = "try-it">This is just like a text area on any other website.
   [[ (your math goes here)</textarea>
+      <h4>Demo</h4>
+      <p>
+        A demo video is available <a id="demo" href="https://www.youtube.com/watch?v=W13t7qmyRR4">here</a> (opens in new tab).
+      </p>
     </div>
   </body>
 </html>

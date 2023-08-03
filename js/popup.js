@@ -12,19 +12,22 @@ function optionsLoad() {
   const saveButton = document.getElementById('save-button');
   const saveMessage = document.getElementById('save-message');
 
-  var rounding = 7
-  var count = 1
-
+  var rounding = 5;
+  var count = 1;
 
   try {
     browserObj.storage.sync.get('rounding', function(data) {
-      rounding = data.rounding
+      if (data.rounding) {
+        rounding = data.rounding
+      } else {
+        rounding = 5;
+      }
       roundingValue.innerHTML = rounding + ' places'
       roundingSlider.value = rounding
     });
   }
   catch {
-      rounding = 7;
+      rounding = 5;
       roundingValue.innerHTML = rounding + ' places'
       roundingSlider.value = rounding
   }
@@ -93,18 +96,22 @@ function pullRecents() {
 
 window.onload = function() {
 
+  pullRecents();
+
+
   let browserObj;
   if (window.chrome) {
     browserObj = chrome;
   } else {
     browserObj = browser;
   }
-  pullRecents();
-  const source = document.getElementById('source-link')
 
-  source.addEventListener("click", () => {
-    browserObj.tabs.create({ url: "https://github.com/chvolow24/inline-calculator"});
-  });
+  const sourceEl = document.getElementById('source-link')
+  if (sourceEl) {
+    sourceEl.addEventListener("click", () => {
+      browserObj.tabs.create({ url: "https://github.com/chvolow24/inline-calculator"});
+    });
+    
+  }
   optionsLoad();
-
 }
